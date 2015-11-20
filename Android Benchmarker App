@@ -1,0 +1,258 @@
+package com.felight.launch;
+
+import android.app.Activity;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.RadioGroup;
+import android.widget.TextView;
+
+import com.felight.launch.Calculator;
+
+import java.util.Arrays;
+
+public class BenchMarkerActivity extends AppCompatActivity {
+    private RadioGroup rbCase;
+    private TextView tvArrayGenerationStatus;
+    private TextView tvBubbleSortStatus;
+    private TextView tvSelctionSortStatus;
+    private int[] originalArray;
+    private EditText etArraySize;
+
+
+    public void sortIt(View view){
+        switch (view.getId()){
+            case R.id.btnBubbleSort:
+                doBubbleSort();
+                break;
+            case R.id.btnSelectionSort:
+                doSelectionSort();
+                break;
+        }
+    }
+
+    private void doSelectionSort() {
+        int[] clone = Arrays.copyOf(originalArray, originalArray.length);
+        long start = System.currentTimeMillis();
+        Calculator.bubbleSort(clone);
+        long timeTaken = System.currentTimeMillis() - start;
+        tvSelctionSortStatus.setText(""+timeTaken);
+    }
+
+
+    public void doBubbleSort(){
+        int[] clone = Arrays.copyOf(originalArray, originalArray.length);
+        long start = System.currentTimeMillis();
+        Calculator.bubbleSort(clone);
+        long timeTaken = System.currentTimeMillis() - start;
+        tvBubbleSortStatus.setText(""+timeTaken);
+
+    }
+
+    public void generateArray(View view){
+        int arraySize = Integer.parseInt(etArraySize.getText().toString());
+        switch (rbCase.getCheckedRadioButtonId()){
+            case R.id.rbAverageCase:
+
+                originalArray = Calculator.generateRandomArray(arraySize);
+                tvArrayGenerationStatus.setText("Array of size " + arraySize + " generated for Average Case");
+                break;
+
+            case R.id.rbBestCase:
+                originalArray = Calculator.generateNaturalNumbers(arraySize);
+                tvArrayGenerationStatus.setText("Array of size " + arraySize + " generated for Best Case");
+
+                break;
+
+            case R.id.rbWorstCase:
+                originalArray = Calculator.generateNaturalNumbers(arraySize);
+                tvArrayGenerationStatus.setText("Array of size " + arraySize + " generated for Worst Case");
+
+                break;
+
+        }
+    }
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.benchmarker_algorithm_layout);
+        rbCase = (RadioGroup) findViewById(R.id.rgCase);
+        etArraySize = (EditText) findViewById(R.id.etArraySize);
+        tvArrayGenerationStatus = (TextView) findViewById(R.id.tvArrayStatus);
+        tvBubbleSortStatus = (TextView) findViewById(R.id.tvBubbleSortStatus);
+        tvSelctionSortStatus = (TextView) findViewById(R.id.tvSelectionSortStatus);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_benchmarker_algorithm, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+}
+---------------------------------------------------------------------------------------------------------------------------------
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    tools:context="com.felight.launch.BenchMarkerActivity">
+
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center">
+
+        <EditText
+            android:hint="Enter Array Size"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:inputType="numberSigned"
+            android:id="@+id/etArraySize"
+            android:layout_weight="1" />
+        <RadioGroup
+            android:id="@+id/rgCase"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="left"
+            android:layout_gravity="left"
+            android:checkedButton="@+id/rbAverageCase"
+            >
+
+
+            <RadioButton
+
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Best Case"
+                android:id="@+id/rbBestCase"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:checked="false" />
+
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Average Case"
+                android:id="@+id/rbAverageCase"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:checked="true"/>
+
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Worst Case"
+                android:id="@+id/rbWorstCase"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:checked="false"
+                />
+
+        </RadioGroup>
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Array creation status"
+            android:id="@+id/tvArrayStatus"
+            android:textSize="25dp"/>
+        <Button
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Generate Array"
+            android:onClick="generateArray"
+            android:id="@+id/btnGenerateArray"/>
+    </LinearLayout>
+
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_horizontal"
+        android:layout_weight="1">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Choose Algo"
+            android:id="@+id/tvAlgosHeader"
+            android:layout_weight="1" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Time Taken"
+            android:id="@+id/tvTimeTakenHeader"
+            android:layout_row="0"
+            android:layout_column="2" />
+
+    </GridLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Status"
+        android:id="@+id/tvBubbleSortStatus"
+        android:layout_gravity="right"
+        android:layout_weight="1" />
+
+    <Button
+        android:onClick="sortIt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Bubble Sort"
+        android:id="@+id/btnBubbleSort"
+        android:layout_weight="1" />
+
+    <Button
+        android:onClick="sortIt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Selection Sort"
+        android:id="@+id/btnSelectionSort"
+        android:layout_weight="1" />
+
+    <TextView
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:text="Status"
+        android:id="@+id/tvSelectionSortStatus"
+        android:layout_gravity="right" />
+
+
+</LinearLayout>
+------------------------------------------------------------------------------------------------------------------------------------
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.felight.launch.BenchMarkerActivity">
+    <item android:id="@+id/action_settings" android:title="@string/action_settings"
+        android:orderInCategory="100" app:showAsAction="never" />
+</menu>
+
+
+
